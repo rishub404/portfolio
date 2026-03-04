@@ -1,227 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Rishav — Software Development Engineer based in Kolkata. Terminal-style portfolio." />
-  <title>RISHAV :: TERMINAL</title>
-  <style>
-    /* ── Reset & Base ─────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Rishav — Software Development Engineer based in Kolkata. Terminal-style portfolio." />
+    <title>RISHAV :: TERMINAL</title>
+    <style>
+        /* ── Reset & Base ─────────────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    :root {
-      --green:       #00FF41;
-      --green-dim:   #00b32c;
-      --green-faint: #004d14;
-      --bg:          #000000;
-      --text:        #33ff57;
-      --text-dim:    #2aaa40;
-      --scanline:    rgba(0, 255, 65, 0.03);
-    }
+        :root {
+            --green: #00FF41;
+            --green-dim: #00b32c;
+            --green-faint: #004d14;
+            --bg: #000000;
+            --text: #33ff57;
+            --text-dim: #2aaa40;
+            --scanline: rgba(0, 255, 65, 0.03);
+        }
 
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-    html {
-      scroll-behavior: smooth;
-    }
+        html {
+            scroll-behavior: smooth;
+        }
 
-    body {
-      background-color: var(--bg);
-      color: var(--text-dim);
-      font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
-      font-size: clamp(12px, 1.4vw, 14px);
-      line-height: 1.7;
-      min-height: 100vh;
-      /* CRT scanline overlay */
-      background-image: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        var(--scanline) 2px,
-        var(--scanline) 4px
-      );
-    }
+        body {
+            background-color: var(--bg);
+            color: var(--text-dim);
+            font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
+            font-size: clamp(12px, 1.4vw, 14px);
+            line-height: 1.7;
+            min-height: 100vh;
+            /* CRT scanline overlay */
+            background-image: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    var(--scanline) 2px,
+                    var(--scanline) 4px);
+        }
 
-    /* ── Layout ───────────────────────────────────────────────── */
-    .terminal-wrap {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: clamp(12px, 4vw, 32px);
-    }
+        /* ── Layout ───────────────────────────────────────────────── */
+        .terminal-wrap {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: clamp(12px, 4vw, 32px);
+        }
 
-    /* ── Typography helpers ───────────────────────────────────── */
-    .neon    { color: var(--green); }
-    .dim     { color: var(--text-dim); }
-    .faint   { color: var(--green-faint); }
-    .prompt  { color: var(--green-dim); user-select: none; }
+        /* ── Typography helpers ───────────────────────────────────── */
+        .neon {
+            color: var(--green);
+        }
 
-    /* ── Box drawing ──────────────────────────────────────────── */
-    .box {
-      border: 1px solid var(--green-dim);
-      padding: 0;
-      margin-bottom: 28px;
-    }
+        .dim {
+            color: var(--text-dim);
+        }
 
-    .box-header {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      border-bottom: 1px solid var(--green-dim);
-      padding: 4px 10px;
-      background: rgba(0, 255, 65, 0.04);
-    }
+        .faint {
+            color: var(--green-faint);
+        }
 
-    .box-header .label {
-      color: var(--green);
-      letter-spacing: 0.12em;
-      font-size: 1em;
-      font-weight: normal;
-    }
+        .prompt {
+            color: var(--green-dim);
+            user-select: none;
+        }
 
-    .box-header .corner {
-      color: var(--green-dim);
-      user-select: none;
-    }
+        /* ── Box drawing ──────────────────────────────────────────── */
+        .box {
+            border: 1px solid var(--green-dim);
+            padding: 0;
+            margin-bottom: 28px;
+        }
 
-    .box-body {
-      padding: 14px 18px;
-    }
+        .box-header {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border-bottom: 1px solid var(--green-dim);
+            padding: 4px 10px;
+            background: rgba(0, 255, 65, 0.04);
+        }
 
-    /* ── Section: BOOT HEADER ─────────────────────────────────── */
-    #boot {
-      margin-bottom: 32px;
-      text-align: left;
-    }
+        .box-header .label {
+            color: var(--green);
+            letter-spacing: 0.12em;
+            font-size: 1em;
+            font-weight: normal;
+        }
 
-    #boot pre {
-      color: var(--green);
-      font-size: clamp(10px, 1.8vw, 15px);
-      line-height: 1.2;
-      overflow-x: auto;
-      white-space: pre;
-    }
+        .box-header .corner {
+            color: var(--green-dim);
+            user-select: none;
+        }
 
-    .boot-sub {
-      margin-top: 10px;
-      color: var(--text-dim);
-      font-size: 0.85em;
-      letter-spacing: 0.05em;
-    }
+        .box-body {
+            padding: 14px 18px;
+        }
 
-    .boot-sub span { color: var(--green-dim); }
+        /* ── Section: BOOT HEADER ─────────────────────────────────── */
+        #boot {
+            margin-bottom: 32px;
+            text-align: left;
+        }
 
-    /* ── Section: SYSTEM INFO ─────────────────────────────────── */
-    .info-row {
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      gap: 4px 16px;
-      color: var(--text-dim);
-    }
+        #boot pre {
+            color: var(--green);
+            font-size: clamp(10px, 1.8vw, 15px);
+            line-height: 1.2;
+            overflow-x: auto;
+            white-space: pre;
+        }
 
-    .info-key  { color: var(--green-dim); white-space: nowrap; }
-    .info-val  { color: var(--text-dim); }
+        .boot-sub {
+            margin-top: 10px;
+            color: var(--text-dim);
+            font-size: 0.85em;
+            letter-spacing: 0.05em;
+        }
 
-    /* ── Section: PROJECTS ────────────────────────────────────── */
-    .project-block {
-      margin-bottom: 18px;
-      border-left: 2px solid var(--green-faint);
-      padding-left: 14px;
-    }
+        .boot-sub span {
+            color: var(--green-dim);
+        }
 
-    .project-block:last-child { margin-bottom: 0; }
+        /* ── Section: SYSTEM INFO ─────────────────────────────────── */
+        .info-row {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            gap: 4px 16px;
+            color: var(--text-dim);
+        }
 
-    .project-name {
-      color: var(--green);
-      letter-spacing: 0.08em;
-      font-size: 1em;
-    }
+        .info-key {
+            color: var(--green-dim);
+            white-space: nowrap;
+        }
 
-    .project-id {
-      color: var(--green-faint);
-      font-size: 0.82em;
-      margin-bottom: 4px;
-    }
+        .info-val {
+            color: var(--text-dim);
+        }
 
-    .project-desc {
-      color: var(--text-dim);
-      font-size: 0.9em;
-    }
+        /* ── Section: PROJECTS ────────────────────────────────────── */
+        .project-block {
+            margin-bottom: 18px;
+            border-left: 2px solid var(--green-faint);
+            padding-left: 14px;
+        }
 
-    /* ── Section: NETWORK LINKS ───────────────────────────────── */
-    .link-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
+        .project-block:last-child {
+            margin-bottom: 0;
+        }
 
-    .link-row:last-child { margin-bottom: 0; }
+        .project-name {
+            color: var(--green);
+            letter-spacing: 0.08em;
+            font-size: 1em;
+        }
 
-    .link-label { color: var(--green-dim); white-space: nowrap; }
+        .project-id {
+            color: var(--green-faint);
+            font-size: 0.82em;
+            margin-bottom: 4px;
+        }
 
-    .link-url {
-      color: var(--text-dim);
-      text-decoration: none;
-      border-bottom: 1px dashed var(--green-faint);
-      word-break: break-all;
-    }
+        .project-desc {
+            color: var(--text-dim);
+            font-size: 0.9em;
+        }
 
-    /* ── Section: STATUS ──────────────────────────────────────── */
-    .status-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 10px;
-      color: var(--text-dim);
-    }
+        /* ── Section: NETWORK LINKS ───────────────────────────────── */
+        .link-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
 
-    .status-row:last-child { margin-bottom: 0; }
+        .link-row:last-child {
+            margin-bottom: 0;
+        }
 
-    .status-key { color: var(--green-dim); white-space: nowrap; }
+        .link-label {
+            color: var(--green-dim);
+            white-space: nowrap;
+        }
 
-    .status-null {
-      color: #555;
-      letter-spacing: 0.05em;
-      font-size: 0.88em;
-      border: 1px solid #1a1a1a;
-      padding: 2px 8px;
-      background: #050505;
-      display: inline-block;
-    }
+        .link-url {
+            color: var(--text-dim);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--green-faint);
+            word-break: break-all;
+        }
 
-    /* ── Footer ───────────────────────────────────────────────── */
-    .footer {
-      border-top: 1px solid var(--green-faint);
-      padding-top: 14px;
-      margin-top: 4px;
-      color: var(--green-faint);
-      font-size: 0.78em;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px 24px;
-    }
+        /* ── Section: STATUS ──────────────────────────────────────── */
+        .status-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 10px;
+            color: var(--text-dim);
+        }
 
-    /* ── Divider ──────────────────────────────────────────────── */
-    .hr {
-      border: none;
-      border-top: 1px dashed var(--green-faint);
-      margin: 12px 0;
-    }
+        .status-row:last-child {
+            margin-bottom: 0;
+        }
 
-    /* ── Responsive ───────────────────────────────────────────── */
-    @media (max-width: 560px) {
-      .info-row { grid-template-columns: 1fr; gap: 0; }
-      .info-key { margin-top: 8px; }
-    }
-  </style>
+        .status-key {
+            color: var(--green-dim);
+            white-space: nowrap;
+        }
+
+        .status-null {
+            color: #555;
+            letter-spacing: 0.05em;
+            font-size: 0.88em;
+            border: 1px solid #1a1a1a;
+            padding: 2px 8px;
+            background: #050505;
+            display: inline-block;
+        }
+
+        /* ── Footer ───────────────────────────────────────────────── */
+        .footer {
+            border-top: 1px solid var(--green-faint);
+            padding-top: 14px;
+            margin-top: 4px;
+            color: var(--green-faint);
+            font-size: 0.78em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 24px;
+        }
+
+        /* ── Divider ──────────────────────────────────────────────── */
+        .hr {
+            border: none;
+            border-top: 1px dashed var(--green-faint);
+            margin: 12px 0;
+        }
+
+        /* ── Responsive ───────────────────────────────────────────── */
+        @media (max-width: 560px) {
+            .info-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .info-key {
+                margin-top: 8px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="terminal-wrap">
+    <div class="terminal-wrap">
 
-  <!-- ── BOOT SCREEN ─────────────────────────────────────────── -->
-  <section id="boot" aria-label="Terminal boot screen">
-    <pre aria-hidden="true">
+        <!-- ── BOOT SCREEN ─────────────────────────────────────────── -->
+        <section id="boot" aria-label="Terminal boot screen">
+            <pre aria-hidden="true">
  _____  _____  _____  _   _   ___  _   _
 |  __ \|_   _|/ ____|| | | | / _ \| | | |
 | |__) | | | | (___  | |_| || |_| | | | |
@@ -229,130 +274,135 @@
 | | \ \ _| |_ ____) || | | || | | \ \_/ /
 |_|  \_\_____|_____/ |_| |_||_| |_|\___/
     </pre>
-    <p class="boot-sub">
-      <span>SYS_BOOT</span> ............. <span class="neon">OK</span> &nbsp;|&nbsp;
-      <span>KERNEL</span> .............. <span class="neon">v2.6.1-dev</span> &nbsp;|&nbsp;
-      <span>UPTIME</span> .............. <span class="neon">∞</span>
-    </p>
-  </section>
+            <p class="boot-sub">
+                <span>SYS_BOOT</span> ............. <span class="neon">OK</span> &nbsp;|&nbsp;
+                <span>KERNEL</span> .............. <span class="neon">v2.6.1-dev</span> &nbsp;|&nbsp;
+                <span>UPTIME</span> .............. <span class="neon">∞</span>
+            </p>
+        </section>
 
-  <!-- ── R> SYSTEM INFO ──────────────────────────────────────── -->
-  <section class="box" id="system-info" aria-labelledby="sysinfo-label">
-    <div class="box-header">
-      <span class="corner">+-- </span>
-      <span class="label" id="sysinfo-label">R&gt; SYSTEM_INFO</span>
-      <span class="corner"> -----------------------------------------------+</span>
-    </div>
-    <div class="box-body">
-      <div class="info-row">
-        <span class="info-key">USER_ID</span>
-        <span class="info-val"><span class="neon">RISHAV</span></span>
+        <!-- ── R> SYSTEM INFO ──────────────────────────────────────── -->
+        <section class="box" id="system-info" aria-labelledby="sysinfo-label">
+            <div class="box-header">
+                <span class="corner">+-- </span>
+                <span class="label" id="sysinfo-label">R&gt; SYSTEM_INFO</span>
+                <span class="corner"> -----------------------------------------------+</span>
+            </div>
+            <div class="box-body">
+                <div class="info-row">
+                    <span class="info-key">USER_ID</span>
+                    <span class="info-val"><span class="neon">RISHAV</span></span>
 
-        <span class="info-key">NODE</span>
-        <span class="info-val">Kolkata, West Bengal, India</span>
+                    <span class="info-key">NODE</span>
+                    <span class="info-val">Kolkata, West Bengal, India</span>
 
-        <span class="info-key">ROLE</span>
-        <span class="info-val">Software Development Engineer (SDE)</span>
+                    <span class="info-key">ROLE</span>
+                    <span class="info-val">Software Development Engineer (SDE)</span>
 
-        <span class="info-key">STACK</span>
-        <span class="info-val">Backend &nbsp;/&nbsp; Systems &nbsp;/&nbsp; Open Source</span>
+                    <span class="info-key">STACK</span>
+                    <span class="info-val">Backend &nbsp;/&nbsp; Systems &nbsp;/&nbsp; Open Source</span>
 
-        <span class="info-key">ACCESS</span>
-        <span class="info-val"><span class="neon">GRANTED</span></span>
-      </div>
-    </div>
-  </section>
+                    <span class="info-key">ACCESS</span>
+                    <span class="info-val"><span class="neon">GRANTED</span></span>
+                </div>
+            </div>
+        </section>
 
-  <!-- ── R> DATA ARCHIVES ────────────────────────────────────── -->
-  <section class="box" id="data-archives" aria-labelledby="archives-label">
-    <div class="box-header">
-      <span class="corner">+-- </span>
-      <span class="label" id="archives-label">R&gt; DATA_ARCHIVES :: PROJECTS</span>
-      <span class="corner"> -------------------------------+</span>
-    </div>
-    <div class="box-body">
+        <!-- ── R> DATA ARCHIVES ────────────────────────────────────── -->
+        <section class="box" id="data-archives" aria-labelledby="archives-label">
+            <div class="box-header">
+                <span class="corner">+-- </span>
+                <span class="label" id="archives-label">R&gt; DATA_ARCHIVES :: PROJECTS</span>
+                <span class="corner"> -------------------------------+</span>
+            </div>
+            <div class="box-body">
 
-      <div class="project-block">
-        <p class="project-id">// ARCHIVE [001]</p>
-        <p class="project-name">TICKETLOCK</p>
-        <hr class="hr" />
-        <p class="project-desc">
-          A distributed ticket-locking system engineered to prevent double-booking and race conditions under high-concurrency workloads.
-        </p>
-      </div>
+                <div class="project-block">
+                    <p class="project-id">// ARCHIVE [001]</p>
+                    <p class="project-name">TICKETLOCK</p>
+                    <hr class="hr" />
+                    <p class="project-desc">
+                        A distributed ticket-locking system engineered to prevent double-booking and race conditions
+                        under high-concurrency workloads.
+                    </p>
+                </div>
 
-      <div class="project-block">
-        <p class="project-id">// ARCHIVE [002]</p>
-        <p class="project-name">OPENPULSE</p>
-        <hr class="hr" />
-        <p class="project-desc">
-          A real-time open-source monitoring dashboard that aggregates service health metrics and surfaces actionable anomalies.
-        </p>
-      </div>
+                <div class="project-block">
+                    <p class="project-id">// ARCHIVE [002]</p>
+                    <p class="project-name">OPENPULSE</p>
+                    <hr class="hr" />
+                    <p class="project-desc">
+                        A real-time open-source monitoring dashboard that aggregates service health metrics and surfaces
+                        actionable anomalies.
+                    </p>
+                </div>
 
-      <div class="project-block">
-        <p class="project-id">// ARCHIVE [003]</p>
-        <p class="project-name">GHOST ENGINEER</p>
-        <hr class="hr" />
-        <p class="project-desc">
-          A stealth CLI toolkit for developer productivity — automates repetitive scaffolding tasks silently in the background.
-        </p>
-      </div>
+                <div class="project-block">
+                    <p class="project-id">// ARCHIVE [003]</p>
+                    <p class="project-name">GHOST ENGINEER</p>
+                    <hr class="hr" />
+                    <p class="project-desc">
+                        A stealth CLI toolkit for developer productivity — automates repetitive scaffolding tasks
+                        silently in the background.
+                    </p>
+                </div>
 
-    </div>
-  </section>
+            </div>
+        </section>
 
-  <!-- ── R> NETWORK LINKS ────────────────────────────────────── -->
-  <section class="box" id="network-links" aria-labelledby="links-label">
-    <div class="box-header">
-      <span class="corner">+-- </span>
-      <span class="label" id="links-label">R&gt; NETWORK_LINKS</span>
-      <span class="corner"> ------------------------------------------+</span>
-    </div>
-    <div class="box-body">
+        <!-- ── R> NETWORK LINKS ────────────────────────────────────── -->
+        <section class="box" id="network-links" aria-labelledby="links-label">
+            <div class="box-header">
+                <span class="corner">+-- </span>
+                <span class="label" id="links-label">R&gt; NETWORK_LINKS</span>
+                <span class="corner"> ------------------------------------------+</span>
+            </div>
+            <div class="box-body">
 
-      <div class="link-row">
-        <span class="link-label">[GITHUB]</span>
-        <a class="link-url" href="https://github.com/rishav" target="_blank" rel="noopener noreferrer">
-          github.com/rishav
-        </a>
-      </div>
+                <div class="link-row">
+                    <span class="link-label">[GITHUB]</span>
+                    <a class="link-url" href="https://github.com/rishub404" target="_blank" rel="noopener noreferrer">
+                        github.com/rishav
+                    </a>
+                </div>
 
-      <div class="link-row">
-        <span class="link-label">[LINKEDIN]</span>
-        <a class="link-url" href="https://linkedin.com/in/rishav" target="_blank" rel="noopener noreferrer">
-          linkedin.com/in/rishav
-        </a>
-      </div>
+                <div class="link-row">
+                    <span class="link-label">[LINKEDIN]</span>
+                    <a class="link-url" href="https://www.linkedin.com/in/rishav-pramanik-483860219/" target="_blank"
+                        rel="noopener noreferrer">
+                        linkedin.com/in/rishav
+                    </a>
+                </div>
 
-    </div>
-  </section>
+            </div>
+        </section>
 
-  <!-- ── R> STATUS ───────────────────────────────────────────── -->
-  <section class="box" id="status" aria-labelledby="status-label">
-    <div class="box-header">
-      <span class="corner">+-- </span>
-      <span class="label" id="status-label">R&gt; STATUS</span>
-      <span class="corner"> ------------------------------------------------+</span>
-    </div>
-    <div class="box-body">
+        <!-- ── R> STATUS ───────────────────────────────────────────── -->
+        <section class="box" id="status" aria-labelledby="status-label">
+            <div class="box-header">
+                <span class="corner">+-- </span>
+                <span class="label" id="status-label">R&gt; STATUS</span>
+                <span class="corner"> ------------------------------------------------+</span>
+            </div>
+            <div class="box-body">
 
-      <div class="status-row">
-        <span class="status-key">GITHUB_STREAK</span>
-        <span class="status-null">STATUS: NULL &mdash; PENDING_SYNCHRONIZATION</span>
-      </div>
+                <div class="status-row">
+                    <span class="status-key">GITHUB_STREAK</span>
+                    <span class="status-null">STATUS: NULL &mdash; PENDING_SYNCHRONIZATION</span>
+                </div>
 
-    </div>
-  </section>
+            </div>
+        </section>
 
-  <!-- ── FOOTER ──────────────────────────────────────────────── -->
-  <footer class="footer" aria-label="Terminal footer">
-    <span>&copy; RISHAV :: ALL RIGHTS RESERVED</span>
-    <span>SESSION_ID: 48102EA8</span>
-    <span>EOF</span>
-  </footer>
+        <!-- ── FOOTER ──────────────────────────────────────────────── -->
+        <footer class="footer" aria-label="Terminal footer">
+            <span>&copy; RISHAV :: ALL RIGHTS RESERVED</span>
+            <span>SESSION_ID: 48102EA8</span>
+            <span>EOF</span>
+        </footer>
 
-</div><!-- /.terminal-wrap -->
+    </div><!-- /.terminal-wrap -->
 
 </body>
+
 </html>
