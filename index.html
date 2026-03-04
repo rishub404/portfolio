@@ -227,18 +227,101 @@
             display: inline-block;
         }
 
-        .streak-img {
-            max-width: 100%;
-            height: auto;
-            border: none;
-            display: block;
-            margin-top: 8px;
-            /*
-             * invert(1): white → black, green(~130°) → magenta(~310°)
-             * hue-rotate(180deg): magenta(310°) + 180° = 490° mod 360° = 130° = green again
-             * Result: empty cells are black, active cells are neon green
-             */
-            filter: invert(1) hue-rotate(180deg) saturate(1.5) brightness(1.1);
+        /* ── Contribution Graph ────────────────────────────────── */
+        .contrib-meta {
+            font-size: 0.8em;
+            color: var(--green-dim);
+            margin: 6px 0 12px;
+            letter-spacing: 0.04em;
+        }
+
+        .contrib-meta .contrib-count {
+            color: var(--green);
+        }
+
+        .contrib-grid {
+            display: flex;
+            gap: 3px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+
+        .contrib-week {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        /* month-label row above the grid */
+        .contrib-month-labels {
+            display: flex;
+            margin-bottom: 4px;
+            padding-left: 0;
+            font-size: 0.72em;
+            color: var(--green-faint);
+            letter-spacing: 0.04em;
+            overflow: hidden;
+        }
+
+        .contrib-month-label {
+            flex-shrink: 0;
+        }
+
+        /* day cell */
+        .contrib-day {
+            width: 11px;
+            height: 11px;
+            border-radius: 2px;
+            flex-shrink: 0;
+            position: relative;
+            cursor: default;
+        }
+
+        .contrib-day[data-tip]:hover {
+            z-index: 20;
+        }
+
+        .contrib-day[data-tip]:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #030f05;
+            border: 1px solid var(--green-dim);
+            color: var(--green);
+            font-family: inherit;
+            font-size: 10px;
+            white-space: nowrap;
+            padding: 3px 8px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Level colours */
+        .cl-0 {
+            background: #0d1117;
+        }
+
+        .cl-1 {
+            background: #004d14;
+        }
+
+        .cl-2 {
+            background: #00821f;
+        }
+
+        .cl-3 {
+            background: #00b32c;
+        }
+
+        .cl-4 {
+            background: #00FF41;
+        }
+
+        .contrib-loading {
+            color: var(--green-faint);
+            font-size: 0.85em;
         }
 
         /* ── Footer ───────────────────────────────────────────────── */
@@ -401,9 +484,14 @@
             <div class="box-body">
 
                 <div class="status-row" style="display: block;">
-                    <span class="status-key">CONTRIBUTION_GRAPH</span>
-                    <img class="streak-img" src="https://ghchart.rshah.org/00FF41/rishub404"
-                        alt="GitHub Contribution Graph" />
+                    <span class="status-key">CONTRIBUTIONS_THIS_YEAR :: <span id="contrib-year-count"
+                            class="neon">...</span></span>
+                    <p class="contrib-meta">TOTAL_ALL_TIME :: <span id="contrib-total" class="contrib-count">...</span>
+                    </p>
+                    <div id="contrib-month-labels" class="contrib-month-labels"></div>
+                    <div id="contrib-graph" class="contrib-grid">
+                        <span class="contrib-loading">// FETCHING_CONTRIBUTION_DATA ...</span>
+                    </div>
                 </div>
 
             </div>
@@ -417,6 +505,139 @@
         </footer>
 
     </div><!-- /.terminal-wrap -->
+
+    <script>
+        (function () {
+            const USER = 'rishub404';
+            const NOW = new Date();
+            const YEAR = NOW.getFullYear();
+
+            // Level → CSS class
+            const LEVEL_CLASS = ['cl-0', 'cl-1', 'cl-2', 'cl-3', 'cl-4'];
+            const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            function fmtDate(d) {
+                const dt = new Date(d + 'T00:00:00');
+                return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            }
+
+            function pad(n) { return n < 10 ? '0' + n : n; }
+
+            function render(data) {
+                const allContribs = data.contributions || [];
+
+                // ── Stats ─────────────────────────────────────────────────
+                const yearTotal = data.total && data.total[YEAR] !== undefined
+                    ? data.total[YEAR]
+                    : allContribs.filter(c => c.date.startsWith(YEAR)).reduce((s, c) => s + c.count, 0);
+
+                const totalAll = Object.values(data.total || {}).reduce((s, v) => s + v, 0);
+
+                document.getElementById('contrib-year-count').textContent = yearTotal.toLocaleString();
+                document.getElementById('contrib-total').textContent = totalAll.toLocaleString();
+
+                // ── Build 52-week grid (last 52 full weeks + current partial) ─
+                // Take the last 371 days worth of data (53 weeks max), grouped by week column
+                const oneYearAgo = new Date(NOW);
+                oneYearAgo.setFullYear(YEAR - 1);
+
+                // Find the Sunday to start from
+                const startDate = new Date(oneYearAgo);
+                startDate.setDate(startDate.getDate() - startDate.getDay()); // rewind to Sunday
+
+                // Index contributions by date
+                const byDate = {};
+                allContribs.forEach(c => { byDate[c.date] = c; });
+
+                // Walk day-by-day from startDate up to today, filling week columns
+                const weeks = [];
+                const monthPositions = []; // {label, col} for month header
+                let weekCells = [];
+                let prevMonth = -1;
+
+                for (let d = new Date(startDate); d <= NOW; d.setDate(d.getDate() + 1)) {
+                    const iso = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+                    const dow = d.getDay(); // 0=Sun
+
+                    if (dow === 0 && weekCells.length > 0) {
+                        weeks.push(weekCells);
+                        weekCells = [];
+                    }
+
+                    // Pad the very first partial week with empty slots
+                    if (weeks.length === 0 && weekCells.length === 0 && dow > 0) {
+                        for (let i = 0; i < dow; i++) weekCells.push(null);
+                    }
+
+                    const contrib = byDate[iso];
+                    const month = d.getMonth();
+                    if (month !== prevMonth) {
+                        monthPositions.push({ label: MONTHS[month], col: weeks.length });
+                        prevMonth = month;
+                    }
+
+                    weekCells.push({
+                        date: iso,
+                        count: contrib ? contrib.count : 0,
+                        level: contrib ? (contrib.level !== undefined ? contrib.level : Math.min(4, Math.ceil(contrib.count / 3))) : 0,
+                    });
+                }
+                if (weekCells.length > 0) weeks.push(weekCells);
+
+                // ── Month label header ─────────────────────────────────────
+                const CELL_W = 11 + 3; // width + gap
+                const labelEl = document.getElementById('contrib-month-labels');
+                labelEl.innerHTML = '';
+                let prevCol = -999;
+                monthPositions.forEach(({ label, col }) => {
+                    const span = document.createElement('span');
+                    span.className = 'contrib-month-label';
+                    span.textContent = label;
+                    span.style.marginLeft = (col - Math.max(0, prevCol)) * CELL_W + 'px';
+                    if (col === 0) span.style.marginLeft = '0';
+                    else span.style.marginLeft = ((col - (prevCol < 0 ? 0 : prevCol)) * CELL_W) + 'px';
+                    labelEl.appendChild(span);
+                    prevCol = col;
+                });
+
+                // ── Grid ─────────────────────────────────────────────────
+                const grid = document.getElementById('contrib-graph');
+                grid.innerHTML = '';
+
+                weeks.forEach(cells => {
+                    const col = document.createElement('div');
+                    col.className = 'contrib-week';
+                    cells.forEach(cell => {
+                        const sq = document.createElement('div');
+                        sq.className = 'contrib-day';
+                        if (cell === null) {
+                            sq.classList.add('cl-0');
+                        } else {
+                            sq.classList.add(LEVEL_CLASS[Math.min(4, cell.level)]);
+                            const label = cell.count === 0
+                                ? 'No contributions on ' + fmtDate(cell.date)
+                                : cell.count + ' contribution' + (cell.count > 1 ? 's' : '') + ' on ' + fmtDate(cell.date);
+                            sq.setAttribute('data-tip', label);
+                        }
+                        col.appendChild(sq);
+                    });
+                    grid.appendChild(col);
+                });
+            }
+
+            function renderError() {
+                document.getElementById('contrib-year-count').textContent = 'ERR';
+                document.getElementById('contrib-total').textContent = 'ERR';
+                document.getElementById('contrib-graph').innerHTML =
+                    '<span class="contrib-loading">[ERR] FAILED_TO_FETCH :: CHECK_NETWORK</span>';
+            }
+
+            fetch('https://github-contributions-api.jogruber.de/v4/' + USER)
+                .then(r => r.ok ? r.json() : Promise.reject(r.status))
+                .then(render)
+                .catch(renderError);
+        })();
+    </script>
 
 </body>
 
