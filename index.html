@@ -415,7 +415,7 @@
 |_|  \_\_____|_____/ |_| |_||_| |_|\___/
     </pre>
             <p class="boot-sub">
-                <span>SYS_BOOT</span> ............. <span class="neon">OK</span> &nbsp;|&nbsp;
+                <span>SYS BOOT</span> ............. <span class="neon">OK</span> &nbsp;|&nbsp;
                 <span>KERNEL</span> .............. <span class="neon">v2.6.1-dev</span> &nbsp;|&nbsp;
                 <span>UPTIME</span> .............. <span class="neon">∞</span>
             </p>
@@ -425,19 +425,19 @@
         <section class="box" id="system-info" aria-labelledby="sysinfo-label">
             <div class="box-header">
                 <span class="corner">+-- </span>
-                <span class="label" id="sysinfo-label">R&gt; SYSTEM_INFO</span>
+                <span class="label" id="sysinfo-label">R&gt; SYSTEM INFO</span>
                 <span class="corner"> -----------------------------------------------+</span>
             </div>
             <div class="box-body">
                 <div class="info-row">
-                    <span class="info-key">USER_ID</span>
+                    <span class="info-key">USER ID</span>
                     <span class="info-val"><span class="neon">RISHAV</span></span>
 
                     <span class="info-key">NODE</span>
                     <span class="info-val">Kolkata, West Bengal, India</span>
 
-                    <span class="info-key">ROLE</span>
-                    <span class="info-val">Software Development Engineer (SDE)</span>
+                    <span class="info-key">TIME</span>
+                    <span class="info-val"><span id="kol-clock" class="neon"></span></span>
 
                     <span class="info-key">STACK</span>
                     <span class="info-val">Backend &nbsp;/&nbsp; Systems &nbsp;/&nbsp; Open Source</span>
@@ -452,7 +452,7 @@
         <section class="box" id="data-archives" aria-labelledby="archives-label">
             <div class="box-header">
                 <span class="corner">+-- </span>
-                <span class="label" id="archives-label">R&gt; DATA_ARCHIVES :: PROJECTS</span>
+                <span class="label" id="archives-label">R&gt; DATA ARCHIVES :: PROJECTS</span>
                 <span class="corner"> -------------------------------+</span>
             </div>
             <div class="box-body">
@@ -494,7 +494,7 @@
         <section class="box" id="network-links" aria-labelledby="links-label">
             <div class="box-header">
                 <span class="corner">+-- </span>
-                <span class="label" id="links-label">R&gt; NETWORK_LINKS</span>
+                <span class="label" id="links-label">R&gt; NETWORK LINKS</span>
                 <span class="corner"> ------------------------------------------+</span>
             </div>
             <div class="box-body">
@@ -527,9 +527,9 @@
             <div class="box-body">
 
                 <div class="status-row" style="display: block;">
-                    <span class="status-key">CONTRIBUTIONS_THIS_YEAR :: <span id="contrib-year-count"
+                    <span class="status-key">CONTRIBUTIONS THIS YEAR :: <span id="contrib-year-count"
                             class="neon">...</span></span>
-                    <p class="contrib-meta">TOTAL_ALL_TIME :: <span id="contrib-total" class="contrib-count">...</span>
+                    <p class="contrib-meta">TOTAL :: <span id="contrib-total" class="contrib-count">...</span>
                     </p>
 
                     <div class="contrib-calendar">
@@ -550,7 +550,7 @@
                                 <span></span><!-- Sat -->
                             </div>
                             <div id="contrib-graph" class="contrib-grid">
-                                <span class="contrib-loading">// FETCHING_CONTRIBUTION_DATA ...</span>
+                                <span class="contrib-loading">// FETCHING CONTRIBUTION DATA ...</span>
                             </div>
                         </div>
                     </div>
@@ -562,7 +562,7 @@
         <!-- ── FOOTER ──────────────────────────────────────────────── -->
         <footer class="footer" aria-label="Terminal footer">
             <span>&copy; RISHAV :: ALL RIGHTS RESERVED</span>
-            <span>SESSION_ID: 48102EA8</span>
+            <span>SESSION ID: 48102EA8</span>
             <span>EOF</span>
         </footer>
 
@@ -705,7 +705,7 @@
                 document.getElementById('contrib-year-count').textContent = 'ERR';
                 document.getElementById('contrib-total').textContent = 'ERR';
                 document.getElementById('contrib-graph').innerHTML =
-                    '<span class="contrib-loading">[ERR] FAILED_TO_FETCH :: CHECK_NETWORK</span>';
+                    '<span class="contrib-loading">[ERR] FAILED TO FETCH :: CHECK NETWORK</span>';
             }
 
             // Two parallel fetches:
@@ -717,6 +717,28 @@
             ])
                 .then(([last, all]) => render(last.contributions || [], all.total || {}))
                 .catch(renderError);
+        })();
+    </script>
+
+    <script>
+        /* ── Kolkata live clock ───────────────────────────────────── */
+        (function () {
+            const el = document.getElementById('kol-clock');
+            const timeFmt = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false,
+            });
+            const dateFmt = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kolkata',
+                weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
+            });
+            function tick() {
+                const now = new Date();
+                el.textContent = timeFmt.format(now) + '  |  ' + dateFmt.format(now);
+            }
+            tick();
+            setInterval(tick, 1000);
         })();
     </script>
 
