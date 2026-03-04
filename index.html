@@ -227,6 +227,20 @@
             display: inline-block;
         }
 
+        .streak-img {
+            max-width: 100%;
+            height: auto;
+            border: none;
+            display: block;
+            margin-top: 8px;
+            /*
+             * invert(1): white → black, green(~130°) → magenta(~310°)
+             * hue-rotate(180deg): magenta(310°) + 180° = 490° mod 360° = 130° = green again
+             * Result: empty cells are black, active cells are neon green
+             */
+            filter: invert(1) hue-rotate(180deg) saturate(1.5) brightness(1.1);
+        }
+
         /* ── Footer ───────────────────────────────────────────────── */
         .footer {
             border-top: 1px solid var(--green-faint);
@@ -362,7 +376,7 @@
                 <div class="link-row">
                     <span class="link-label">[GITHUB]</span>
                     <a class="link-url" href="https://github.com/rishub404" target="_blank" rel="noopener noreferrer">
-                        github.com/rishav
+                        github.com/rishub404
                     </a>
                 </div>
 
@@ -370,7 +384,7 @@
                     <span class="link-label">[LINKEDIN]</span>
                     <a class="link-url" href="https://www.linkedin.com/in/rishav-pramanik-483860219/" target="_blank"
                         rel="noopener noreferrer">
-                        linkedin.com/in/rishav
+                        linkedin.com/in/rishav-pramanik/
                     </a>
                 </div>
 
@@ -386,9 +400,10 @@
             </div>
             <div class="box-body">
 
-                <div class="status-row">
-                    <span class="status-key">GITHUB_STREAK</span>
-                    <span class="status-null">STATUS: NULL &mdash; PENDING_SYNCHRONIZATION</span>
+                <div class="status-row" style="display: block;">
+                    <span class="status-key">CONTRIBUTION_GRAPH</span>
+                    <img class="streak-img" src="https://ghchart.rshah.org/00FF41/rishub404"
+                        alt="GitHub Contribution Graph" />
                 </div>
 
             </div>
