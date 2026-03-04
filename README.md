@@ -1,6 +1,5 @@
 # rishav · portfolio
 
-Personal portfolio of **Rishav Pramanik**, Backend SDE based in Kolkata.
 
 **Live →** [rishubdev.vercel.app](https://rishubdev.vercel.app/)
 
