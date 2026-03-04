@@ -1,40 +1,22 @@
-# RISHAV // BACKEND SDE
+# rishav · portfolio
 
-```text
-[SYSTEM INFO]
-USER      : RISHAV
-NODE      : KOLKATA
-ROLE      : BACKEND SDE
-STACK     : JAVA / PYTHON / FEDORA
-STATUS    : ONLINE
-```
+Personal portfolio of **Rishav Pramanik**, Backend SDE based in Kolkata.
 
-> Engineering high-concurrency distributed systems, robust APIs, and agentic workflows.
+**Live →** [rishubdev.vercel.app](https://rishubdev.vercel.app/)
 
-## // PROJECT_ARCHIVES
+---
 
-### [ARCHIVE_001] TICKETLOCK
-**Architecture:** Spring Boot, Redis, PostgreSQL
-**Focus:** High-concurrency transaction integrity, Redis distributed locking, and Spring Security.
-Engineered a highly available booking engine designed to mitigate race conditions under immense load. Utilized Redis distributed locks to ensure zero overselling during traffic spikes, while securing stateful transactions and maintaining strict data consistency across concurrent nodes.
+### Built with
 
-### [ARCHIVE_002] OPENPULSE
-**Architecture:** FastAPI, Python
-**Focus:** Real-time health monitoring and asynchronous backend processing.
-Architected a low-latency telemetry ingestion backend capable of streaming live health metrics. Leveraged FastAPI's asynchronous capabilities to optimize for high-throughput, I/O-bound operations and deliver sub-millisecond response times.
+Single-file static HTML — no frameworks, no build step.  
+Styled with vanilla CSS and a small vanilla JS snippet for live data.
 
-### [ARCHIVE_003] GHOST ENGINEER
-**Architecture:** Python, LangGraph, CLI
-**Focus:** CLI automation and complex LangGraph agentic logic.
-Developed an autonomous terminal agent orchestrating complex workflows. Leveraged LangGraph state machines to process multi-step engineering tasks, intelligently bridging LLM reasoning with direct execution in the developer environment.
+### Aesthetic
 
-## // THE_CORE_STACK
+Matrix terminal — black background, `#00FF41` neon green monospace text, CRT scanline overlay, ASCII-art header, and boxy `+--- | ---+` borders throughout.
 
-Java, Spring Boot, PostgreSQL, Docker, Redis, Python, FastAPI, LangGraph, Next.js, Fedora Linux
+### Features
 
-## // LIVE_SITE
-
-The visual representation of this repository is an interactive Matrix Terminal. 
-
-**Execution Protocol:** 
-Locate and open `index.html` in any modern web browser to initialize the interface and view the live portfolio.
+- Live GitHub contribution heatmap with hover tooltips
+- Live Kolkata clock (IST)
+- Fully responsive, zero dependencies
