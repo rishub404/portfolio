@@ -241,9 +241,10 @@
 
         .contrib-grid {
             display: flex;
-            gap: 3px;
-            overflow-x: auto;
-            padding-bottom: 6px;
+            flex: 1;
+            gap: 2px;
+            overflow: visible;
+            padding-bottom: 2px;
         }
 
         .contrib-week {
@@ -252,19 +253,61 @@
             gap: 3px;
         }
 
-        /* month-label row above the grid */
-        .contrib-month-labels {
+        /* Calendar outer layout */
+        .contrib-calendar {
+            width: 100%;
+        }
+
+        .contrib-header {
             display: flex;
-            margin-bottom: 4px;
-            padding-left: 0;
-            font-size: 0.72em;
-            color: var(--green-faint);
-            letter-spacing: 0.04em;
-            overflow: hidden;
+            margin-bottom: 3px;
+        }
+
+        .contrib-day-spacer {
+            width: 26px;
+            flex-shrink: 0;
+        }
+
+        /* Month label row — absolute positions */
+        .contrib-month-labels {
+            position: relative;
+            flex: 1;
+            height: 14px;
+            overflow: visible;
         }
 
         .contrib-month-label {
+            position: absolute;
+            top: 0;
+            font-size: 0.72em;
+            color: var(--green-faint);
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+
+        /* Body row: day labels + grid side by side */
+        .contrib-body {
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .contrib-day-labels {
+            width: 22px;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.7em;
+            color: var(--green-faint);
+            letter-spacing: 0.03em;
+        }
+
+        .contrib-day-labels span {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 4px;
+            /* height set by JS to match cellSize + gap */
         }
 
         /* day cell */
@@ -488,9 +531,28 @@
                             class="neon">...</span></span>
                     <p class="contrib-meta">TOTAL_ALL_TIME :: <span id="contrib-total" class="contrib-count">...</span>
                     </p>
-                    <div id="contrib-month-labels" class="contrib-month-labels"></div>
-                    <div id="contrib-graph" class="contrib-grid">
-                        <span class="contrib-loading">// FETCHING_CONTRIBUTION_DATA ...</span>
+
+                    <div class="contrib-calendar">
+                        <!-- Month labels row (spacer + labels) -->
+                        <div class="contrib-header">
+                            <div class="contrib-day-spacer"></div>
+                            <div id="contrib-month-labels" class="contrib-month-labels"></div>
+                        </div>
+                        <!-- Body: Mon/Wed/Fri labels + heatmap grid -->
+                        <div class="contrib-body">
+                            <div id="contrib-day-labels" class="contrib-day-labels">
+                                <span></span><!-- Sun -->
+                                <span>Mon</span>
+                                <span></span><!-- Tue -->
+                                <span>Wed</span>
+                                <span></span><!-- Thu -->
+                                <span>Fri</span>
+                                <span></span><!-- Sat -->
+                            </div>
+                            <div id="contrib-graph" class="contrib-grid">
+                                <span class="contrib-loading">// FETCHING_CONTRIBUTION_DATA ...</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -511,113 +573,127 @@
             const USER = 'rishub404';
             const NOW = new Date();
             const YEAR = NOW.getFullYear();
+            const GAP = 2; // px gap between cells
 
-            // Level → CSS class
             const LEVEL_CLASS = ['cl-0', 'cl-1', 'cl-2', 'cl-3', 'cl-4'];
             const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-            function fmtDate(d) {
-                const dt = new Date(d + 'T00:00:00');
-                return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            function fmtDate(dateStr) {
+                return new Date(dateStr + 'T00:00:00')
+                    .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
             }
-
             function pad(n) { return n < 10 ? '0' + n : n; }
 
-            function render(data) {
-                const allContribs = data.contributions || [];
-
-                // ── Stats ─────────────────────────────────────────────────
-                const yearTotal = data.total && data.total[YEAR] !== undefined
-                    ? data.total[YEAR]
-                    : allContribs.filter(c => c.date.startsWith(YEAR)).reduce((s, c) => s + c.count, 0);
-
-                const totalAll = Object.values(data.total || {}).reduce((s, v) => s + v, 0);
-
-                document.getElementById('contrib-year-count').textContent = yearTotal.toLocaleString();
-                document.getElementById('contrib-total').textContent = totalAll.toLocaleString();
-
-                // ── Build 52-week grid (last 52 full weeks + current partial) ─
-                // Take the last 371 days worth of data (53 weeks max), grouped by week column
-                const oneYearAgo = new Date(NOW);
-                oneYearAgo.setFullYear(YEAR - 1);
-
-                // Find the Sunday to start from
-                const startDate = new Date(oneYearAgo);
-                startDate.setDate(startDate.getDate() - startDate.getDay()); // rewind to Sunday
-
-                // Index contributions by date
+            /* ── Build the week/day array from a contributions list ── */
+            function buildWeeks(contribs) {
                 const byDate = {};
-                allContribs.forEach(c => { byDate[c.date] = c; });
+                contribs.forEach(c => { byDate[c.date] = c; });
 
-                // Walk day-by-day from startDate up to today, filling week columns
+                // Start from the Sunday on or before exactly-one-year-ago
+                const anchor = new Date(NOW);
+                anchor.setFullYear(YEAR - 1);
+                const startDate = new Date(anchor);
+                startDate.setDate(startDate.getDate() - startDate.getDay());
+
                 const weeks = [];
-                const monthPositions = []; // {label, col} for month header
+                const monthPositions = [];
                 let weekCells = [];
                 let prevMonth = -1;
 
                 for (let d = new Date(startDate); d <= NOW; d.setDate(d.getDate() + 1)) {
                     const iso = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-                    const dow = d.getDay(); // 0=Sun
+                    const dow = d.getDay();
 
+                    // New week starts on Sunday
                     if (dow === 0 && weekCells.length > 0) {
                         weeks.push(weekCells);
                         weekCells = [];
                     }
-
-                    // Pad the very first partial week with empty slots
+                    // Pad first partial week
                     if (weeks.length === 0 && weekCells.length === 0 && dow > 0) {
                         for (let i = 0; i < dow; i++) weekCells.push(null);
                     }
 
-                    const contrib = byDate[iso];
                     const month = d.getMonth();
                     if (month !== prevMonth) {
                         monthPositions.push({ label: MONTHS[month], col: weeks.length });
                         prevMonth = month;
                     }
 
-                    weekCells.push({
+                    const c = byDate[iso];
+                    weekCells.push(c ? {
                         date: iso,
-                        count: contrib ? contrib.count : 0,
-                        level: contrib ? (contrib.level !== undefined ? contrib.level : Math.min(4, Math.ceil(contrib.count / 3))) : 0,
-                    });
+                        count: c.count,
+                        level: c.level !== undefined ? c.level : Math.min(4, Math.ceil(c.count / 3)),
+                    } : { date: iso, count: 0, level: 0 });
                 }
                 if (weekCells.length > 0) weeks.push(weekCells);
+                return { weeks, monthPositions };
+            }
 
-                // ── Month label header ─────────────────────────────────────
-                const CELL_W = 11 + 3; // width + gap
+            /* ── Render everything once both fetches resolve ── */
+            function render(gridContribs, allTotal) {
+                // ── Stats
+                const yearTotal = gridContribs
+                    .filter(c => c.date.startsWith(YEAR))
+                    .reduce((s, c) => s + c.count, 0);
+                const totalAll = Object.values(allTotal || {}).reduce((s, v) => s + v, 0);
+
+                document.getElementById('contrib-year-count').textContent = yearTotal.toLocaleString();
+                document.getElementById('contrib-total').textContent = totalAll.toLocaleString();
+
+                // ── Build grid data
+                const { weeks, monthPositions } = buildWeeks(gridContribs);
+                const numWeeks = weeks.length;
+
+                // ── Compute cell size to perfectly fill container (no scrollbar)
+                const grid = document.getElementById('contrib-graph');
+                const availW = grid.offsetWidth;                      // px the grid can use
+                const cellSize = Math.max(8, Math.floor(
+                    (availW - (numWeeks - 1) * GAP) / numWeeks
+                ));
+                const CELL_W = cellSize + GAP;                        // stride per column
+
+                // ── Month labels — absolute left position per column
                 const labelEl = document.getElementById('contrib-month-labels');
                 labelEl.innerHTML = '';
-                let prevCol = -999;
                 monthPositions.forEach(({ label, col }) => {
                     const span = document.createElement('span');
                     span.className = 'contrib-month-label';
                     span.textContent = label;
-                    span.style.marginLeft = (col - Math.max(0, prevCol)) * CELL_W + 'px';
-                    if (col === 0) span.style.marginLeft = '0';
-                    else span.style.marginLeft = ((col - (prevCol < 0 ? 0 : prevCol)) * CELL_W) + 'px';
+                    span.style.left = (col * CELL_W) + 'px';
                     labelEl.appendChild(span);
-                    prevCol = col;
                 });
 
-                // ── Grid ─────────────────────────────────────────────────
-                const grid = document.getElementById('contrib-graph');
-                grid.innerHTML = '';
+                // ── Day-of-week label heights (match cell row height)
+                const rowH = cellSize + GAP;
+                const dayLabelEl = document.getElementById('contrib-day-labels');
+                if (dayLabelEl) {
+                    Array.from(dayLabelEl.children).forEach(sp => {
+                        sp.style.height = rowH + 'px';
+                    });
+                }
 
+                // ── Grid cells
+                grid.style.gap = GAP + 'px';
+                grid.innerHTML = '';
                 weeks.forEach(cells => {
                     const col = document.createElement('div');
                     col.className = 'contrib-week';
+                    col.style.gap = GAP + 'px';
                     cells.forEach(cell => {
                         const sq = document.createElement('div');
                         sq.className = 'contrib-day';
+                        sq.style.width = cellSize + 'px';
+                        sq.style.height = cellSize + 'px';
                         if (cell === null) {
                             sq.classList.add('cl-0');
                         } else {
                             sq.classList.add(LEVEL_CLASS[Math.min(4, cell.level)]);
-                            const label = cell.count === 0
+                            const tip = cell.count === 0
                                 ? 'No contributions on ' + fmtDate(cell.date)
                                 : cell.count + ' contribution' + (cell.count > 1 ? 's' : '') + ' on ' + fmtDate(cell.date);
-                            sq.setAttribute('data-tip', label);
+                            sq.setAttribute('data-tip', tip);
                         }
                         col.appendChild(sq);
                     });
@@ -632,9 +708,14 @@
                     '<span class="contrib-loading">[ERR] FAILED_TO_FETCH :: CHECK_NETWORK</span>';
             }
 
-            fetch('https://github-contributions-api.jogruber.de/v4/' + USER)
-                .then(r => r.ok ? r.json() : Promise.reject(r.status))
-                .then(render)
+            // Two parallel fetches:
+            //   1. ?y=last  → covers trailing 12 months across the year boundary (e.g. Mar 2025 – Mar 2026)
+            //   2. no param → returns per-year totals for the all-time count
+            Promise.all([
+                fetch('https://github-contributions-api.jogruber.de/v4/' + USER + '?y=last').then(r => r.json()),
+                fetch('https://github-contributions-api.jogruber.de/v4/' + USER).then(r => r.json()),
+            ])
+                .then(([last, all]) => render(last.contributions || [], all.total || {}))
                 .catch(renderError);
         })();
     </script>
