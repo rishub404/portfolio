@@ -149,9 +149,10 @@
 
         /* ── Section: PROJECTS ────────────────────────────────────── */
         .project-block {
-            margin-bottom: 18px;
-            border-left: 2px solid var(--green-faint);
-            padding-left: 14px;
+            margin-bottom: 16px;
+            border: 1px solid var(--green-faint);
+            padding: 14px 16px 10px;
+            position: relative;
         }
 
         .project-block:last-child {
@@ -159,20 +160,36 @@
         }
 
         .project-name {
-            color: var(--green);
-            letter-spacing: 0.08em;
+            color: #00FF41;
+            letter-spacing: 0.1em;
             font-size: 1em;
-        }
-
-        .project-id {
-            color: var(--green-faint);
-            font-size: 0.82em;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .project-desc {
-            color: var(--text-dim);
-            font-size: 0.9em;
+            color: #03A062;
+            font-size: 0.88em;
+            line-height: 1.65;
+            margin-bottom: 8px;
+        }
+
+        .project-tech {
+            color: #03A062;
+            font-size: 0.82em;
+            line-height: 1.6;
+        }
+
+        .project-tech .tech-label {
+            color: var(--green-faint);
+        }
+
+        .project-archive-tag {
+            display: block;
+            text-align: right;
+            color: var(--green-faint);
+            font-size: 0.75em;
+            margin-top: 10px;
+            letter-spacing: 0.06em;
         }
 
         /* ── Section: NETWORK LINKS ───────────────────────────────── */
@@ -440,7 +457,7 @@
                     <span class="info-val"><span id="kol-clock" class="neon"></span></span>
 
                     <span class="info-key">STACK</span>
-                    <span class="info-val">Backend &nbsp;/&nbsp; Systems &nbsp;/&nbsp; Open Source</span>
+                    <span class="info-val">Backend &nbsp;/&nbsp; Systems</span>
 
                     <span class="info-key">ACCESS</span>
                     <span class="info-val"><span class="neon">GRANTED</span></span>
@@ -457,34 +474,37 @@
             </div>
             <div class="box-body">
 
+                <!-- PROJECT 001 -->
                 <div class="project-block">
-                    <p class="project-id">// ARCHIVE [001]</p>
                     <p class="project-name">TICKETLOCK</p>
                     <hr class="hr" />
-                    <p class="project-desc">
-                        A distributed ticket-locking system engineered to prevent double-booking and race conditions
-                        under high-concurrency workloads.
-                    </p>
+                    <p class="project-desc">A distributed ticket-locking system engineered to prevent double-booking and
+                        race conditions under high-concurrency workloads.</p>
+                    <p class="project-tech"><span class="tech-label">// TECH STACK: </span>Java, Spring Boot, Spring
+                        Security, PostgreSQL, Redis, Docker, Next.js, Tailwind CSS, TypeScript</p>
+                    <span class="project-archive-tag">// ARCHIVE [001]</span>
                 </div>
 
+                <!-- PROJECT 002 -->
                 <div class="project-block">
-                    <p class="project-id">// ARCHIVE [002]</p>
                     <p class="project-name">OPENPULSE</p>
                     <hr class="hr" />
-                    <p class="project-desc">
-                        A real-time open-source monitoring dashboard that aggregates service health metrics and surfaces
-                        actionable anomalies.
-                    </p>
+                    <p class="project-desc">A real-time open-source monitoring dashboard that aggregates service health
+                        metrics and surfaces actionable anomalies.</p>
+                    <p class="project-tech"><span class="tech-label">// TECH STACK: </span>Python, FastAPI, Java,
+                        PostgreSQL, Bash, Next.js, Tailwind CSS, Lucide React</p>
+                    <span class="project-archive-tag">// ARCHIVE [002]</span>
                 </div>
 
+                <!-- PROJECT 003 -->
                 <div class="project-block">
-                    <p class="project-id">// ARCHIVE [003]</p>
                     <p class="project-name">GHOST ENGINEER</p>
                     <hr class="hr" />
-                    <p class="project-desc">
-                        A stealth CLI toolkit for developer productivity — automates repetitive scaffolding tasks
-                        silently in the background.
-                    </p>
+                    <p class="project-desc">A stealth CLI toolkit for developer productivity — automates repetitive
+                        scaffolding tasks silently in the background.</p>
+                    <p class="project-tech"><span class="tech-label">// TECH STACK: </span>Python, LangGraph, GitPython,
+                        PyGithub, Bash</p>
+                    <span class="project-archive-tag">// ARCHIVE [003]</span>
                 </div>
 
             </div>
