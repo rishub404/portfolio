@@ -87,6 +87,7 @@
             border-bottom: 1px solid var(--green-dim);
             padding: 4px 10px;
             background: rgba(0, 255, 65, 0.04);
+            overflow: hidden;
         }
 
         .box-header .label {
@@ -94,11 +95,20 @@
             letter-spacing: 0.12em;
             font-size: 1em;
             font-weight: normal;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .box-header .corner {
             color: var(--green-dim);
             user-select: none;
+            white-space: nowrap;
+        }
+
+        /* Trailing dashes corner — stretches to fill but never overflows */
+        .box-header .corner:last-child {
+            flex: 1;
+            overflow: hidden;
         }
 
         .box-body {
@@ -411,6 +421,13 @@
 
         /* ── Responsive ───────────────────────────────────────────── */
         @media (max-width: 560px) {
+
+            /* Prevent any element from causing a horizontal scrollbar */
+            html,
+            body {
+                overflow-x: hidden;
+            }
+
             .info-row {
                 grid-template-columns: 1fr;
                 gap: 0;
