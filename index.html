@@ -261,8 +261,13 @@
             display: flex;
             flex: 1;
             gap: 2px;
-            overflow: visible;
+            overflow: hidden;
             padding-bottom: 2px;
+        }
+
+        /* Mobile horizontal scroll wrapper — desktop untouched */
+        .contrib-scroll-wrap {
+            width: 100%;
         }
 
         .contrib-week {
@@ -414,6 +419,34 @@
             .info-key {
                 margin-top: 8px;
             }
+
+            /* Contribution graph: scroll horizontally on mobile */
+            .contrib-scroll-wrap {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                /* Custom slim scrollbar */
+                scrollbar-width: thin;
+                scrollbar-color: var(--green-faint) transparent;
+                padding-bottom: 6px;
+            }
+
+            .contrib-scroll-wrap::-webkit-scrollbar {
+                height: 4px;
+            }
+
+            .contrib-scroll-wrap::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .contrib-scroll-wrap::-webkit-scrollbar-thumb {
+                background: var(--green-faint);
+                border-radius: 2px;
+            }
+
+            /* Give the calendar a minimum width so cells stay readable */
+            .contrib-scroll-wrap .contrib-calendar {
+                min-width: 640px;
+            }
         }
     </style>
 </head>
@@ -560,28 +593,30 @@
                     <p class="contrib-meta">TOTAL :: <span id="contrib-total" class="contrib-count">...</span>
                     </p>
 
-                    <div class="contrib-calendar">
-                        <!-- Month labels row (spacer + labels) -->
-                        <div class="contrib-header">
-                            <div class="contrib-day-spacer"></div>
-                            <div id="contrib-month-labels" class="contrib-month-labels"></div>
-                        </div>
-                        <!-- Body: Mon/Wed/Fri labels + heatmap grid -->
-                        <div class="contrib-body">
-                            <div id="contrib-day-labels" class="contrib-day-labels">
-                                <span></span><!-- Sun -->
-                                <span>Mon</span>
-                                <span></span><!-- Tue -->
-                                <span>Wed</span>
-                                <span></span><!-- Thu -->
-                                <span>Fri</span>
-                                <span></span><!-- Sat -->
+                    <div class="contrib-scroll-wrap">
+                        <div class="contrib-calendar">
+                            <!-- Month labels row (spacer + labels) -->
+                            <div class="contrib-header">
+                                <div class="contrib-day-spacer"></div>
+                                <div id="contrib-month-labels" class="contrib-month-labels"></div>
                             </div>
-                            <div id="contrib-graph" class="contrib-grid">
-                                <span class="contrib-loading">// FETCHING CONTRIBUTION DATA ...</span>
+                            <!-- Body: Mon/Wed/Fri labels + heatmap grid -->
+                            <div class="contrib-body">
+                                <div id="contrib-day-labels" class="contrib-day-labels">
+                                    <span></span><!-- Sun -->
+                                    <span>Mon</span>
+                                    <span></span><!-- Tue -->
+                                    <span>Wed</span>
+                                    <span></span><!-- Thu -->
+                                    <span>Fri</span>
+                                    <span></span><!-- Sat -->
+                                </div>
+                                <div id="contrib-graph" class="contrib-grid">
+                                    <span class="contrib-loading">// FETCHING CONTRIBUTION DATA ...</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </div><!-- /.contrib-scroll-wrap -->
                 </div>
 
             </div>
