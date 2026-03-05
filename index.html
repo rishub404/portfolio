@@ -135,10 +135,23 @@
             color: var(--text-dim);
             font-size: 0.85em;
             letter-spacing: 0.05em;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0 4px;
         }
 
         .boot-sub span {
             color: var(--green-dim);
+        }
+
+        .boot-item {
+            white-space: nowrap;
+        }
+
+        .boot-sep {
+            color: var(--green-faint);
+            user-select: none;
         }
 
         /* ── Section: SYSTEM INFO ─────────────────────────────────── */
@@ -437,6 +450,16 @@
                 margin-top: 8px;
             }
 
+            /* Boot sub: stack items vertically, hide pipe separators */
+            .boot-sub {
+                flex-direction: column;
+                gap: 2px 0;
+            }
+
+            .boot-sep {
+                display: none;
+            }
+
             /* Contribution graph: scroll horizontally on mobile */
             .contrib-scroll-wrap {
                 overflow-x: auto;
@@ -483,9 +506,11 @@
 |_|  \_\_____|_____/ |_| |_||_| |_|\___/
     </pre>
             <p class="boot-sub">
-                <span>SYS BOOT</span> ............. <span class="neon">OK</span> &nbsp;|&nbsp;
-                <span>KERNEL</span> .............. <span class="neon">v2.6.1-dev</span> &nbsp;|&nbsp;
-                <span>UPTIME</span> .............. <span class="neon">∞</span>
+                <span class="boot-item"><span>SYS BOOT</span> ............. <span class="neon">OK</span></span><span
+                    class="boot-sep">&nbsp;|&nbsp;</span>
+                <span class="boot-item"><span>KERNEL</span> .............. <span
+                        class="neon">v2.6.1-dev</span></span><span class="boot-sep">&nbsp;|&nbsp;</span>
+                <span class="boot-item"><span>UPTIME</span> .............. <span class="neon">∞</span></span>
             </p>
         </section>
 
